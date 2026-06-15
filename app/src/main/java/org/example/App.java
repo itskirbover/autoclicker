@@ -11,12 +11,8 @@ import java.awt.event.MouseEvent;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JTextField;
-import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.event.DocumentEvent;
-import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
-import javax.swing.text.BadLocationException;
 import javax.swing.text.DocumentFilter;
 
 public class App {
@@ -35,17 +31,17 @@ public class App {
       }
     }
     JFrame frame = new JFrame("Autoclicker");
-    JButton toggleACButton = new JButton("Toggle");
+    JButton toggle = new JButton("Toggle");
     JTextField minutesField = new JTextField();
     JTextField secondsField = new JTextField();
     JTextField millisecondsField = new JTextField();
 
     Robot robot = new Robot();
     isAutoclicking = false;
-    int[] nums = { 0, 0, 100 };
+    int[] delays = { 0, 0, 100 };
     autoclickThread = null;
 
-    toggleACButton.addActionListener(new ActionListener() {
+    toggle.addActionListener(new ActionListener() {
       @Override
       public void actionPerformed(ActionEvent e) {
         if (isAutoclicking) {
@@ -55,7 +51,7 @@ public class App {
           isAutoclicking = true;
           autoclickThread = new Thread(() -> {
             while (true) {
-              int delay = ((nums[0] * 6000) + (nums[1] * 1000) + (nums[2]));
+              int delay = ((delays[0] * 6000) + (delays[1] * 1000) + (delays[2]));
               System.out.println("Delay: " + delay + "ms");
               robot.mousePress(MouseEvent.BUTTON1_DOWN_MASK);
               robot.delay(delay);
@@ -81,7 +77,7 @@ public class App {
             throws javax.swing.text.BadLocationException {
           if (string.matches("\\d+")) {
             super.insertString(fb, offset, string, attr);
-            nums[index] = Integer.parseInt(fields[index].getText());
+            delays[index] = Integer.parseInt(fields[index].getText());
           }
         }
 
@@ -95,7 +91,7 @@ public class App {
           if (text.matches("\\d+") && futureLength <= maxCharacters) {
             super.replace(fb, offset, length, text, attrs);
             // i dont fucking know what this does but it works so im not gonna question it
-            nums[index] = Integer.parseInt(fields[index].getText());
+            delays[index] = Integer.parseInt(fields[index].getText());
           }
         }
 
@@ -103,19 +99,19 @@ public class App {
         public void remove(FilterBypass fb, int offset, int length) throws javax.swing.text.BadLocationException {
           super.remove(fb, offset, length);
           if (fields[index].getText().isEmpty()) {
-            nums[index] = 0;
+            delays[index] = 0;
           } else {
-            nums[index] = Integer.parseInt(fields[index].getText());
+            delays[index] = Integer.parseInt(fields[index].getText());
           }
         }
       });
     }
-    toggleACButton.setPreferredSize(new Dimension(120, 40));
+    toggle.setPreferredSize(new Dimension(120, 40));
 
     frame.add(minutesField);
     frame.add(secondsField);
     frame.add(millisecondsField);
-    frame.add(toggleACButton);
+    frame.add(toggle);
     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     frame.setLayout(new FlowLayout());
     frame.setSize(400, 300);
